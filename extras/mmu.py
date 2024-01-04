@@ -3065,7 +3065,7 @@ class Mmu:
     def _unload_gate(self, homing_max=None):
         self._validate_gate_config("unload")
         self._set_filament_direction(self.DIRECTION_UNLOAD)
-        self._servo_down()
+        self._servo_down(buzz_gear=False)
         if homing_max is None:
             homing_max = self.gate_homing_max
 
@@ -3191,7 +3191,7 @@ class Mmu:
 
         self._log_debug("Unloading bowden tube")
         self._set_filament_direction(self.DIRECTION_UNLOAD)
-        self._servo_down()
+        self._servo_down(buzz_gear=False)
         tolerance = self.bowden_allowable_unload_delta
 
         # Optional safety step
@@ -3339,7 +3339,7 @@ class Mmu:
             # Don't allow sync without toolhead sensor because of risk of over unloading
             synced = self.toolhead_sync_unload and self._has_sensor(self.ENDSTOP_TOOLHEAD) and not extruder_only
             if synced:
-                self._servo_down()
+                self._servo_down(buzz_gear=False)
                 speed = self.extruder_sync_unload_speed
                 motor = "gear+extruder"
             else:
