@@ -31,6 +31,17 @@ class MmuServer:
         # Spoolman filament info retrieval functionality and update reporting
         self.server.register_remote_method("spoolman_get_filaments", self.get_filaments)
 
+        if config.getboolean("track_spool_changes", True):
+            self.server.register_event_handler("spoolman:active_spool_set", self._handle_spoolman_active_spool_set)
+
+    async def _handle_spoolman_active_spool_set(self, status: Dict[str, Any], *_, **__) -> None:
+        spool_id = status.get('spool_id', None)
+        if not spool_id:
+            return
+
+        result = await self.klippy_apis.query_objects({'mmu': None})
+
+
     def _filelist_changed(self, response):
         if not self.enable_file_preprocessor:
             return
